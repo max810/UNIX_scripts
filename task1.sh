@@ -42,11 +42,11 @@ collect_info() {
     else
         mem_info=${mem_info##*: }
         mem_info=${mem_info%%kB}
-        mem_info="$(numfmt --to iec $((mem_info * 1000)))"
+        mem_info="$((mem_info / 1024)) Mi"
     fi
     res_str="${res_str}Memory: ${mem_info}B\n"
 
-    mb_info_raw_str=$(sudo dmidecode --type baseboard)
+    mb_info_raw_str=$(dmidecode --type baseboard)
     if [ $? -ne 0 ]; then
         >&2 echo "Failed to fetch motherboard info, skipping..."
         mb_info="Unknown"
@@ -59,7 +59,7 @@ collect_info() {
     fi
     res_str="${res_str}Motherboard: ${mb_info}\n"
 
-    serial_info=$(sudo dmidecode --type system | grep 'Serial Number')
+    serial_info=$(dmidecode --type system | grep 'Serial Number')
     if [ $? -ne 0 ]; then
         >&2 echo "Failed to fetch serial number info, skipping..."
         serial_info="Unknown"
@@ -86,7 +86,7 @@ collect_info() {
     fi
     res_str="${res_str}Kernel version: ${kernel_info}\n"
 
-    created_info=$(sudo dumpe2fs $(mount | grep 'on / ' | awk '{print $1}') 2> /dev/null | grep 'Filesystem created: ')
+    created_info=$(dumpe2fs $(mount | grep 'on / ' | awk '{print $1}') 2> /dev/null | grep 'Filesystem created: ')
     if [ $? -ne 0 ]; then
         >&2 echo "Failed to fetch installation date info, skipping..."
         created_info="Unknown"
@@ -139,7 +139,7 @@ collect_info() {
         for var in ${net_interfaces[@]}; do
             ip_addr=$(ip addr show "$var" | grep -E 'inet ' | awk '{print $2}')
             if [ -z "$ip_addr" ]; then
-                ip_addr='NoIP'
+                ip_addr='-/-'
             fi
             res_str="${res_str}${var}: ${ip_addr}\n"
         done
