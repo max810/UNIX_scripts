@@ -105,7 +105,8 @@ collect_info() {
     fi
     res_str="${res_str}Hostname: ${hostname}\n"
 
-    uptime=$(uptime -p | sed 's/up\s*//')
+    # parsing the columns between the first (cur. time) and the unknown (users online) column
+    uptime=$(uptime | sed -r 's/^\s[0-9:]+\sup\s//' | sed -r 's/,\s+[0-9]+\susers.*//')
     if [ $? -ne 0 ]; then
         >&2 echo "Failed to fetch uptime info, skipping..."
         uptime="Unknown"
