@@ -5,7 +5,21 @@ print_error() {
 }
 
 print_help() {
-    echo "Help message!"
+    str="Developed by Maksym Bekuzarov on 2020-03-01.\n"
+    str="${str}This is a tool to gather and store information about the system in the given file.\n"
+    str="${str}If the file exists, a copy with a date and counter in its name will be created.\n"
+    str="${str}Usage:\n\t./task1.sh [-h|--help] [-n num] [file]\n"
+    str="${str}Options:\n"
+    str="${str}\t-h|--help:\n"
+    str="${str}\t\tPrint this help message and exit\n\n"
+    str="${str}\t-n \`num\`:int, >=1:\n"
+    str="${str}\t\tSpecify how many existing output files to leave, delete others (oldest first)\n"
+    str="${str}\t\tDefault=keep all\n\n"
+    str="${str}\t\`file\`:\n"
+    str="${str}\t\tSpecify the file to store the output into\n"
+    str="${str}\t\tDefault=~/bash/task1.out\n"
+    
+    echo -e "$str"
     exit 0
 }
 
