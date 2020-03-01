@@ -127,7 +127,7 @@ collect_info() {
     res_str="${res_str}Users logged in: ${unique_users}\n"
 
     res_str="${res_str}----NETWORK----\n"
-    # get all network interfaces 
+    # get all network interfaces
     #   -> grep names 
     #   -> remove number (leave name only) and whitespace 
     #   -> remove ':'
@@ -180,7 +180,7 @@ fi
 
 # if arguments not specified
 if [ -z "$_file" ]; then
-    _file='~/bash/task1.out'
+    _file="$HOME/bash/task1.out"
 fi
 
 _file_par_dir=$(dirname "$_file")
@@ -190,7 +190,7 @@ if [ ! -d $_file_par_dir ]; then
     echo "Directory $_file_par_dir does not exist, creating..."
     error_msg=$(mkdir -p "$_file_par_dir" 2>&1)
     # check if creating a directory failed
-    if [ $? ]; then
+    if [ $? -ne 0 ]; then
         print_error "Error creating directory $_file_par_dir, reason: $error_msg"
     fi
 fi
