@@ -70,12 +70,13 @@ collect_info() {
 
     res_str="${res_str}----SYSTEM----\n"
 
-    os_release=$(cat /etc/os-release | grep "PRETTY_NAME")
+    os_release=$(lsb_release -a | grep "Description")
     if [ $? -ne 0 ]; then
         >&2 echo "Failed to fetch os release info, skipping..."
         os_release="Unknown"
     else
-        os_release=${os_release##*=}
+        os_release=${os_release##*:}
+        os_release=$(echo "$os_release" | awk '$1=$1')
     fi
     res_str="${res_str}OS Distribution: ${os_release}\n"
 
@@ -86,7 +87,7 @@ collect_info() {
     fi
     res_str="${res_str}Kernel version: ${kernel_info}\n"
 
-    created_info=$(dumpe2fs $(mount | grep 'on / ' | awk '{print $1}') 2> /dev/null | grep 'Filesystem created: ')
+    created_info=$(dumpe2fs $(mount | grep 'on / ' | awk '{print $1}') | grep 'Filesystem created: ')
     if [ $? -ne 0 ]; then
         >&2 echo "Failed to fetch installation date info, skipping..."
         created_info="Unknown"
@@ -202,17 +203,18 @@ if [ -f "$_file" ]; then
     _file="${_file}-${cur_d}"
     # we get all the files with -nnnn in their names, sorted numerically from lowest to highest
     all_files_created_before=($(ls -1v "$_file_par_dir" | grep -E "^$_file_name-[0-9]{4,}"))
-    if [ ${#all_files_created_before[@]} -eq 0 ]; then # if no such files found (i.e. len(all_files...) == 0)
+    num_found=${#all_files_created_before[@]}
+    if [ $num_found -eq 0 ]; then # if no such files found (i.e. len(all_files...) == 0)
         _file="${_file}-0000"
     else
-        last_created_file_name=${all_files_created_before[-1]}
+        last_created_file_name=${all_files_created_before[$((num_found - 1))]}
         # remove the largest possible '*-' string from the beginning of the variable's contents
         last_created_number=${last_created_file_name##*-}
         last_created_number=$(expr "$last_created_number" + 1) # we use expr because otherwise 0100 -> 65 (octal -> dec)
         new_created_number="$(printf "%04d" $last_created_number)"
         _file="${_file}-${new_created_number}"
-        if [ $_n -ne -1 ] && [ $_n -le ${#all_files_created_before[@]} ]; then
-            leave_n_files=$(expr ${#all_files_created_before[@]} - $_n + 1) # we delete +1 file because we will create a new just after
+        if [ $_n -ne -1 ] && [ $_n -le $num_found ]; then
+            leave_n_files=$(expr $num_found - $_n + 1) # we delete +1 file because we will create a new just after
             for var in ${all_files_created_before[@]:0:$leave_n_files}; do
                 echo "Deleting old output file ${var}..."
                 rm "${_file_par_dir}/${var}"
