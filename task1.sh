@@ -200,28 +200,44 @@ fi
 if [ -f "$_file" ]; then
     cur_d=$(date "+%Y%m%d")
 
-    _file="${_file}-${cur_d}"
-    # we get all the files with -nnnn in their names, sorted numerically from lowest to highest
-    all_files_created_before=($(ls -1v "$_file_par_dir" | grep -E "^$_file_name-[0-9]{4,}"))
+    _file_d="${_file}-${cur_d}"
+    _file_name_d="${_file_name}-${cur_d}"
+
+    # we get all the files with -nnnn in their names FOR TODAY, sort numerically from lowest to highest
+    all_files_created_before=($(ls -1v "$_file_par_dir" | grep -E "^$_file_name_d"))
     num_found=${#all_files_created_before[@]}
-    if [ $num_found -eq 0 ]; then # if no such files found (i.e. len(all_files...) == 0)
-        _file="${_file}-0000"
-    else
+
+    if [ $num_found -ne 0 ]; then
+        # last_created_file_name=${all_files_created_before[$l]]}
         last_created_file_name=${all_files_created_before[$((num_found - 1))]}
         # remove the largest possible '*-' string from the beginning of the variable's contents
         last_created_number=${last_created_file_name##*-}
-        last_created_number=$(expr "$last_created_number" + 1) # we use expr because otherwise 0100 -> 65 (octal -> dec)
-        new_created_number="$(printf "%04d" $last_created_number)"
-        _file="${_file}-${new_created_number}"
-        if [ $_n -ne -1 ] && [ $_n -le $num_found ]; then
-            leave_n_files=$(expr $num_found - $_n + 1) # we delete +1 file because we will create a new just after
-            for var in ${all_files_created_before[@]:0:$leave_n_files}; do
-                echo "Deleting old output file ${var}..."
-                rm "${_file_par_dir}/${var}"
-            done
-        fi
-    fi
+        new_number=$(expr "$last_created_number" + 1) # we use expr because otherwise 0100 -> 65 (octal -> dec)
+
+        for ((i = $num_found - 1; i >= 0; i--)); do
+            new_number_formatted="$(printf "%04d" $new_number)"
+            old_file=${all_files_created_before[$i]}
+            new_file="${_file_name_d}-${new_number_formatted}"
+            
+            mv "$_file_par_dir/$old_file" "$_file_par_dir/$new_file"
+
+            new_number=$((new_number - 1))
+        done   
+    fi  
+
+    mv "$_file" "$_file_d-0000"
 fi
 
 collect_info > "$_file"
 echo "Created output file $_file at $(date)."
+
+updated_files_created_before=($(ls -1v "$_file_par_dir" | grep -E "^$_file_name_d"))
+num_files=${#updated_files_created_before[@]}
+
+if [ $_n -ne -1 ] && [ $_n -le $num_files ]; then
+    for ((i = $num_files - 1; i >= $_n - 1; i--)); do
+        file_to_delete="${updated_files_created_before[$i]}"
+        echo "Deleting old output file $file_to_delete..."
+        rm -f "$_file_par_dir/$file_to_delete"
+    done
+fi
