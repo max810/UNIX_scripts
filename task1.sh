@@ -232,12 +232,12 @@ if [ ! -d $_file_par_dir ]; then
     fi
 fi
 
+cur_d=$(date "+%Y%m%d")
+
+_file_d="${_file}-${cur_d}"
+_file_name_d="${_file_name}-${cur_d}"
+
 if [ -f "$_file" ]; then
-    cur_d=$(date "+%Y%m%d")
-
-    _file_d="${_file}-${cur_d}"
-    _file_name_d="${_file_name}-${cur_d}"
-
     # we get all the files with -nnnn in their names FOR TODAY, sort numerically from lowest to highest
     all_files_created_before=($(ls -1v "$_file_par_dir" | grep -E "^$_file_name_d"))
     num_found=${#all_files_created_before[@]}
