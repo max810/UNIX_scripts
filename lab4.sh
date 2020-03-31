@@ -46,14 +46,15 @@ print_help() {
 }
 
 cur_file_name=$(basename "$0")
+cur_log_file_name="${cur_file_name%%.sh}.log"
 
 ensure_log_file_exists() {
     if [ ! -d "$HOME/log" ]; then
         mkdir "$HOME/log"
     fi
 
-    if [ ! -f "$HOME/log/$cur_file_name" ]; then
-        touch "$HOME/log/$cur_file_name"
+    if [ ! -f "$HOME/log/$cur_log_file_name" ]; then
+        touch "$HOME/log/$cur_log_file_name"
     fi
 }
 
@@ -68,7 +69,7 @@ log_message() {
     timestamp=$(date +%s)
     message=$(printf "%s; %s; %s" "$current_date" "$timestamp" "$msg")
     logger $message
-    echo $message >> "$HOME/log/$cur_file_name"
+    echo $message >> "$HOME/log/$cur_log_file_name"
 }
 
 ping_child() {
