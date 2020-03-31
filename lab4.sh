@@ -106,25 +106,25 @@ ensure_log_file_exists
 
 (
     child_term() {
-        batya=$(exec sh -c 'echo "$PPID"')
-        log_message "${batya}; 15; SIGTERM; child process terminated"
+        ya=$(exec sh -c 'echo "$PPID"')
+        log_message "${ya}; 15; SIGTERM; child process terminated"
         exit 1
     }
 
     custom_signal() {
-        batya=$(exec sh -c 'echo "$PPID"')
-        log_message "${batya}; 10; SIGUSR1; ping signal"
+        ya=$(exec sh -c 'echo "$PPID"')
+        log_message "${ya}; 10; SIGUSR1; ping signal"
     }
 
     ping_back_signal() {
-        batya=$(exec sh -c 'echo "$PPID"')
-        log_message "${batya}; 12; SIGUSR2; answer parent's ping"
+        ya=$(exec sh -c 'echo "$PPID"')
+        log_message "${ya}; 12; SIGUSR2; answer parent's ping"
         kill -SIGUSR2 $$
     }
 
     health_check() {
-        batya=$(exec sh -c 'echo "$PPID"')
-        log_message "${batya}; 18; SIGCONTv; health check"
+        ya=$(exec sh -c 'echo "$PPID"')
+        log_message "${ya}; 18; SIGCONTv; health check"
     }
 
     echo "Inside the child process"

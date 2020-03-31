@@ -1,0 +1,10 @@
+char *concat(const char *s1, const char *s2);
+void log_message(char *str, int pid, int signal, char* signal_str);
+void ping_child_process(int pid);
+void kill_child_process(int pid);
+void ping_ask(int pid);
+void parent_ping_ask_handler();
+void child_usr1_handler();
+void child_ping_ask_handler();
+void child_term_handler();
+void parent_child_died_handler();

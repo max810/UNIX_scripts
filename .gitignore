@@ -1,2 +1,4 @@
 methods/
 test/
+*.out
+*.tar.gz
