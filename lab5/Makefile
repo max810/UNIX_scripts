@@ -11,7 +11,7 @@ uninstall:
 
 # archives the whole shit into one tar.gz
 archive:
-	tar -czvf pzpi-16-2-bekuzarov-maksym-lab5.tar.gz Makefile configure.sh install.sh pzpi-16-2-bekuzarov-maksym-lab5.c misc.c misc.h README.md
+	tar -czvf pzpi-16-2-bekuzarov-maksym-lab5.tar.gz Makefile configure.sh install.sh pzpi-16-2-bekuzarov-maksym-lab5.c misc.c misc.h README INSTALL LICENSE
 
 
 all:
